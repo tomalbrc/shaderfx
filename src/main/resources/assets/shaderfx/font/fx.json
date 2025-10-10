@@ -1,0 +1,48 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "\uE200": -1,
+        "\uE201": -10,
+        "\uE202": 1
+      }
+    },
+    {
+      "ascent": 0,
+      "chars": [
+        "0123456789ABCDEF"
+      ],
+      "file": "shaderfx:font/fx.png",
+      "type": "bitmap"
+    },
+    {
+      "ascent": 0,
+      "height": 256,
+      "chars": [
+        "X"
+      ],
+      "file": "shaderfx:font/frame.png",
+      "type": "bitmap"
+    },
+    {
+      "ascent": 16,
+      "height": 81,
+      "chars": [
+        "\uE100"
+      ],
+      "file": "shaderfx:font/totem.png",
+      "type": "bitmap"
+    },
+    {
+      "ascent": 12,
+      "height": 209,
+      "chars": [
+        "\uE101"
+      ],
+      "file": "shaderfx:font/aniheart.png",
+      "type": "bitmap"
+    }
+  ]
+}
