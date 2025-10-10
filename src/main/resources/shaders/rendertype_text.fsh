@@ -6,8 +6,6 @@
 
 //%IMPORTS%
 
-#define APERTURE_BACKGROUND vec4(0, 0, 0, 1)
-
 uniform sampler2D Sampler0;
 
 in float sphericalVertexDistance;
