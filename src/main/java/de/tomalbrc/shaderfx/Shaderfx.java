@@ -132,10 +132,10 @@ public class Shaderfx implements ModInitializer {
         var img = new BufferedImage(ShaderEffects.EFFECTS.size(), 1, BufferedImage.TYPE_INT_ARGB);
         for (Map.Entry<ResourceLocation, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
             var effect = entry.getValue();
-
-            stringBuilder.append(effect.asChar());
-
-            img.setRGB(effect.id(), 0, effect.asFullscreenColor());
+            if (effect.addFont()) {
+                stringBuilder.append(effect.asChar());
+                img.setRGB(effect.id(), 0, effect.asFullscreenColor());
+            }
 
             shaderCases.append(FileUtil.wrapCase(effect.snippet(), effect.id()));
         }
@@ -146,6 +146,9 @@ public class Shaderfx implements ModInitializer {
         var img = new BufferedImage(ShaderEffects.EFFECTS.size(), 1, BufferedImage.TYPE_INT_ARGB);
         for (Map.Entry<ResourceLocation, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
             var effect = entry.getValue();
+            if (!effect.addFont())
+                continue;
+
             img.setRGB(effect.id(), 0, effect.asLocalEffectColor());
         }
         return img;
@@ -173,12 +176,12 @@ public class Shaderfx implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, commandBuildContext, commandSelection) -> {
             dispatcher.register(commandFullscreen(SUGGESTER));
             dispatcher.register(commandLocal(SUGGESTER));
-            dispatcher.register(commandCustom(SUGGESTER));
+            dispatcher.register(commandCustom());
         });
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> commandFullscreen(SuggestionProvider<CommandSourceStack> suggestionProvider) {
-        return Commands.literal("shaderfx").requires(x -> x.hasPermission(3)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
+        return Commands.literal("shaderfx").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
             int color = HexColorArgument.getHexColor(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
@@ -214,7 +217,7 @@ public class Shaderfx implements ModInitializer {
 
 
     private static LiteralArgumentBuilder<CommandSourceStack> commandLocal(SuggestionProvider<CommandSourceStack> suggestionProvider) {
-        return Commands.literal("shaderfx:local").requires(x -> x.hasPermission(3)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
+        return Commands.literal("shaderfx:local").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
             int color = HexColorArgument.getHexColor(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
@@ -248,10 +251,8 @@ public class Shaderfx implements ModInitializer {
         }))));
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> commandCustom(SuggestionProvider<CommandSourceStack> suggestionProvider) {
-        return Commands.literal("shaderfx:custom").requires(x -> x.hasPermission(3)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("text", StringArgumentType.string()).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
-            ResourceLocation id = ResourceLocationArgument.getId(x, "id");
+    private static LiteralArgumentBuilder<CommandSourceStack> commandCustom() {
+        return Commands.literal("shaderfx:custom").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("text", StringArgumentType.string()).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
             int fadeIn = IntegerArgumentType.getInteger(x, "fadeIn");
@@ -264,22 +265,19 @@ public class Shaderfx implements ModInitializer {
 
             return Command.SINGLE_SUCCESS;
         })))).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
-            ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
-            var titlePacket = new ClientboundSetTitleTextPacket(ShaderEffects.effectComponentLocal(id, color));
+            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().asNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
             player.connection.send(titlePacket);
 
             return Command.SINGLE_SUCCESS;
         })).executes(x -> {
-            ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
-            var titlePacket = new ClientboundSetTitleTextPacket(ShaderEffects.effectComponentLocal(id));
+            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().asNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
             player.connection.send(titlePacket);
 
             return Command.SINGLE_SUCCESS;
-        })))));
+        })));
     }
 }

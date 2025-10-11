@@ -10,7 +10,7 @@ vec4 spikes(vec4 vertexColor, vec2 centerUV, float rad) {
     float spikeTime = GameTime * SPIKES_SPEED + hash(int(angle)) % 100 * 63.1234;
     float s = (abs(fract(angle) - 0.5) * 20 / SPIKES_COUNT - 0.2) * length(centerUV) + (vertexColor.r*255/100.0) + (1 - vertexColor.a) * 0.05 + abs(fract(spikeTime) - 0.5) * 0.25;
     if (s < 0) {
-        color = vec4(vertexColor.rgb, clamp(-s * SPIKES_BLUR + SPIKES_BLUR_BIAS, 0, 1));
+        color = vec4(vec3(1), clamp(-s * SPIKES_BLUR + SPIKES_BLUR_BIAS, 0, 1));
     }
 
     return color;

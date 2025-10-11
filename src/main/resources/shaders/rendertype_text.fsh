@@ -43,7 +43,7 @@ void main() {
         if (ty > frameheight)
             discard;
 
-        color = texture(Sampler0, texCoord0  + vec2(0, frameheight/256*(frameI+1)));
+        color = texture(Sampler0, texCoord0  + vec2(0, frameheight/256*(frameI+1))) * vertexColor * ColorModulator;
     }
 
     if (color.a < 0.1) {

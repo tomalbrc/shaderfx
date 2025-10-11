@@ -15,8 +15,6 @@ public class ShaderUtil {
     }
 
     public static BufferedImage toARGB(BufferedImage src) {
-        if (src.getType() == BufferedImage.TYPE_INT_ARGB) return src;
-
         int w = src.getWidth();
         int h = src.getHeight();
 

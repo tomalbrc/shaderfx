@@ -46,7 +46,7 @@ public class ShaderEffects {
     }
 
     public static ShaderEffect register(ResourceLocation id, String snippet, boolean addFont) {
-        ShaderEffect effect = new ShaderEffect(id, EFFECTS.size(), snippet);
+        ShaderEffect effect = new ShaderEffect(id, EFFECTS.size() + 1, snippet, addFont);
         EFFECTS.put(id, effect);
         return effect;
     }
@@ -56,13 +56,13 @@ public class ShaderEffects {
     }
 
     public static final ShaderEffect CIRCLE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "circle"), loadSnippet("circle.glsl"));
-    public static final ShaderEffect FADE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fade"), loadSnippet("color_fade.glsl"));
+    public static final ShaderEffect FADE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fade"), "color = vec4(vertexColor.rgb, vertexColor.a);");
     public static final ShaderEffect DIRECTIONAL_GRID = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "directional_grid"), loadSnippet("dir_grid_impl.glsl"));
-    public static final ShaderEffect NOISE_GRID = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "noise_grid"), loadSnippet("noise_grid_impl.glsl"));
+    public static final ShaderEffect NOISE_GRID = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "noise_grid"), "ivec2 grid = ivec2(gl_FragCoord.xy / 32) * 32; color = (abs(hash(grid.x ^ hash(grid.y)) % 0x100) + 10 < int(vertexColor.a * (length(grid / ScreenSize.xy - 0.5) * 2 + 1) * 0x100)) ? vec4(vertexColor.rgb, 1) : vec4(0);");
     public static final ShaderEffect FRACTAL1 = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fractal1"), "color = fractal1();");
     public static final ShaderEffect FRACTAL2 = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fractal2"), "color = fractal2();");
     public static final ShaderEffect APERTURE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "aperture"), loadSnippet("rot_impl.glsl"), false);
     public static final ShaderEffect SPIKE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "spike"), "color = spikes(vertexColor, centerUV, 0.09);");
     public static final ShaderEffect VIGNETTE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "vignette"), "color = vec4(vertexColor.rgb, clamp(length(centerUV * vec2(0.8, 0.5 / (1 - vertexColor.a))) - 0.6, 0, 1));");
-    public static final ShaderEffect IMAGE_TRANSITION = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "image_transition"), "float mask = texture(Sampler0, centerUV-0.5).r; color = vec4(vertexColor.rgb, step(mask, vertexColor.a));", false);
+    public static final ShaderEffect IMAGE_TRANSITION = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "image_transition"), "float mask = texture(Sampler0, centerUV-0.5*vec2(1,-1)).r; color = vec4(vertexColor.rgb, step(mask, vertexColor.a));", false);
 }
