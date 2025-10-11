@@ -1,10 +1,15 @@
 package de.tomalbrc.shaderfx.api;
 
+import de.tomalbrc.shaderfx.Shaderfx;
 import net.minecraft.util.ARGB;
 
 import java.awt.image.BufferedImage;
 
 public class ShaderUtil {
+    public static void enableAssets() {
+        Shaderfx.enableAssets();
+    }
+
     public static BufferedImage tintEdges(BufferedImage bufferedImage, int color) {
         bufferedImage.setRGB(0, 0, color);
         bufferedImage.setRGB(bufferedImage.getWidth()-1, 0, color);

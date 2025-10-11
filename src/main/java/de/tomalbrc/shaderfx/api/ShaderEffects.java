@@ -12,10 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 import static de.tomalbrc.shaderfx.Shaderfx.MODID;
-import static de.tomalbrc.shaderfx.Shaderfx.loadSnippet;
+import static de.tomalbrc.shaderfx.api.FileUtil.loadSnippet;
 
 public class ShaderEffects {
     public static final FontDescription.Resource FONT = new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath(MODID, "fx"));
+    public static final FontDescription.Resource FONT_LOCAL = new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath(MODID, "fx_local"));
     public static final Map<ResourceLocation, ShaderEffect> EFFECTS = new Object2ObjectArrayMap<>();
 
     public static final List<ResourceLocation> IMPORTS = new ArrayList<>();
@@ -24,12 +25,20 @@ public class ShaderEffects {
         IMPORTS.add(mojimport);
     }
 
-    public static MutableComponent effectComponent(ResourceLocation resourceLocation, int color) {
-        return Component.literal(EFFECTS.get(resourceLocation).asChar()).withStyle(Style.EMPTY.withFont(FONT).withColor(color));
+    public static MutableComponent effectComponent(ResourceLocation effectId, int color) {
+        return Component.literal(EFFECTS.get(effectId).asChar()).withStyle(Style.EMPTY.withFont(FONT).withColor(color).withShadowColor(0));
     }
 
-    public static MutableComponent effectComponent(ResourceLocation resourceLocation) {
-        return effectComponent(resourceLocation, 0xFF_FF_FF);
+    public static MutableComponent effectComponentLocal(ResourceLocation effectId, int color) {
+        return Component.literal(EFFECTS.get(effectId).asChar()).withStyle(Style.EMPTY.withFont(FONT_LOCAL).withColor(color).withShadowColor(0));
+    }
+
+    public static MutableComponent effectComponentLocal(ResourceLocation effectId) {
+        return effectComponentLocal(effectId, 0xFF_FF_FF);
+    }
+
+    public static MutableComponent effectComponent(ResourceLocation effectId) {
+        return effectComponent(effectId, 0xFF_FF_FF);
     }
 
     public static ShaderEffect effect(ResourceLocation resourceLocation) {

@@ -4,8 +4,6 @@
 #moj_import <minecraft:dynamictransforms.glsl>
 #moj_import <minecraft:projection.glsl>
 
-const vec3 COLOR_TOP_RIGHT = vec3(254.0 / 255.0, 1.0, 1.0); // ~#FEFFFF
-const vec3 COLOR_TOP_LEFT  = vec3(253.0 / 255.0, 1.0, 1.0); // ~#FDFFFF
 const vec2[4] corners = vec2[4](vec2(0), vec2(0, 1), vec2(1), vec2(1, 0));
 
 in vec3 Position;
@@ -23,7 +21,9 @@ out float cylindricalVertexDistance;
 out vec4 vertexColor;
 out vec2 texCoord0;
 
+// effect
 flat out int animationType;
+// animated emoji
 flat out int frames;
 flat out int fps;
 flat out float frameheight;
@@ -39,10 +39,14 @@ void main() {
     vec4 col = round(texture(Sampler0, UV0) * 255);
 
     animationType = 0;
-    if (col.a == 251 && Position.z == 0) {
+    if (col.a == 251 && Position.z == 0) { // screenspace
         animationType = int(col.b);
         gl_Position.xy = vec2(coord * 2 - 1) * vec2(1, -1);
         gl_Position.zw = vec2(-1, 1);
+        vertexColor = Color;
+    }
+    if (col.a == 253 && Position.z == 0) { // normal
+        animationType = int(col.b);
         vertexColor = Color;
     }
 
@@ -55,8 +59,7 @@ void main() {
     frames = fps = 0;
     if (animationType != 0) {
         texCoord0 = vec2(UV0 - coord * 64 / 256);
-    }
-    else {
+    } else {
         if (col.a == 252 && Position.z == 0) {
             frames = int(col.r);
             fps = int(col.g);
