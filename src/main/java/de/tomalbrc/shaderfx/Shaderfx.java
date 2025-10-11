@@ -3,11 +3,14 @@ package de.tomalbrc.shaderfx;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.tomalbrc.shaderfx.api.FileUtil;
 import de.tomalbrc.shaderfx.api.ShaderEffect;
 import de.tomalbrc.shaderfx.api.ShaderEffects;
+import de.tomalbrc.shaderfx.api.ShaderUtil;
+import eu.pb4.polymer.resourcepack.api.PackResource;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.resourcepack.extras.api.format.font.BitmapProvider;
 import eu.pb4.polymer.resourcepack.extras.api.format.font.FontAsset;
@@ -28,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,10 +42,28 @@ import java.util.Map;
 public class Shaderfx implements ModInitializer {
     public static final String MODID = "shaderfx";
 
+    public static boolean ADD_LOCAL = false;
+
     public static void enableAssets() {
         PolymerResourcePackUtils.addModAssets(MODID);
 
+
         PolymerResourcePackUtils.RESOURCE_PACK_CREATION_EVENT.register(builder -> {
+            builder.addResourceConverter((path, resource) -> {
+                if (path.equals("assets/shaderfx/textures/font/frame.png")) {
+                    try {
+                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(resource.readAllBytes()));
+                        ShaderUtil.tintEdges(image, ShaderEffects.APERTURE.asFullscreenColor());
+                        var out = new ByteArrayOutputStream();
+                        ImageIO.write(image, "PNG", out);
+                        return PackResource.of(out.toByteArray());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return resource;
+            });
+
             String fragmentShader = FileUtil.loadCore("rendertype_text.fsh");
             StringBuilder importList = new StringBuilder();
             for (ResourceLocation location : ShaderEffects.IMPORTS) {
@@ -77,9 +99,9 @@ public class Shaderfx implements ModInitializer {
             }
 
             builder.addData(String.format("assets/%s/font/%s.json", ShaderEffects.FONT.id().getNamespace(), ShaderEffects.FONT.id().getPath()), fontAsset.build().toBytes());
-            builder.addData(String.format("assets/%s/font/%s_local.json", ShaderEffects.FONT.id().getNamespace(), ShaderEffects.FONT.id().getPath()), fontAssetLocal.build().toBytes());
+            if (ADD_LOCAL) builder.addData(String.format("assets/%s/font/%s_local.json", ShaderEffects.FONT.id().getNamespace(), ShaderEffects.FONT.id().getPath()), fontAssetLocal.build().toBytes());
             builder.addData(String.format("assets/%s/textures/font/%s.png", ShaderEffects.FONT.id().getNamespace(), ShaderEffects.FONT.id().getPath()), out.toByteArray());
-            builder.addData(String.format("assets/%s/textures/font/%s_local.png", ShaderEffects.FONT.id().getNamespace(), ShaderEffects.FONT.id().getPath()), outLocal.toByteArray());
+            if (ADD_LOCAL) builder.addData(String.format("assets/%s/textures/font/%s_local.png", ShaderEffects.FONT.id().getNamespace(), ShaderEffects.FONT.id().getPath()), outLocal.toByteArray());
             builder.addData("assets/minecraft/shaders/core/rendertype_text.fsh", fragmentShader.getBytes(StandardCharsets.UTF_8));
         });
     }
@@ -161,6 +183,41 @@ public class Shaderfx implements ModInitializer {
 
     private static LiteralArgumentBuilder<CommandSourceStack> commandLocal(SuggestionProvider<CommandSourceStack> suggestionProvider) {
         return Commands.literal("shaderfx:local").requires(x -> x.hasPermission(3)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
+            int color = HexColorArgument.getHexColor(x, "color");
+            ResourceLocation id = ResourceLocationArgument.getId(x, "id");
+            ServerPlayer player = EntityArgument.getPlayer(x, "player");
+
+            int fadeIn = IntegerArgumentType.getInteger(x, "fadeIn");
+            int stay = IntegerArgumentType.getInteger(x, "stay");
+            int fadeOut = IntegerArgumentType.getInteger(x, "fadeOut");
+
+            var titlePacket = new ClientboundSetTitleTextPacket(ShaderEffects.effectComponentLocal(id, color));
+            var timesPacket = new ClientboundSetTitlesAnimationPacket(fadeIn, stay, fadeOut);
+            player.connection.send(new ClientboundBundlePacket(ImmutableList.of(timesPacket, titlePacket)));
+
+            return Command.SINGLE_SUCCESS;
+        })))).executes(x -> {
+            int color = HexColorArgument.getHexColor(x, "color");
+            ResourceLocation id = ResourceLocationArgument.getId(x, "id");
+            ServerPlayer player = EntityArgument.getPlayer(x, "player");
+
+            var titlePacket = new ClientboundSetTitleTextPacket(ShaderEffects.effectComponentLocal(id, color));
+            player.connection.send(titlePacket);
+
+            return Command.SINGLE_SUCCESS;
+        })).executes(x -> {
+            ResourceLocation id = ResourceLocationArgument.getId(x, "id");
+            ServerPlayer player = EntityArgument.getPlayer(x, "player");
+
+            var titlePacket = new ClientboundSetTitleTextPacket(ShaderEffects.effectComponentLocal(id));
+            player.connection.send(titlePacket);
+
+            return Command.SINGLE_SUCCESS;
+        }))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> commandCustom(SuggestionProvider<CommandSourceStack> suggestionProvider) {
+        return Commands.literal("shaderfx:custom").requires(x -> x.hasPermission(3)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("", StringArgumentType.string())).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
             int color = HexColorArgument.getHexColor(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");

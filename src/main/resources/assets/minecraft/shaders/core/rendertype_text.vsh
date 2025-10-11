@@ -45,7 +45,7 @@ void main() {
         gl_Position.zw = vec2(-1, 1);
         vertexColor = Color;
     }
-    if (col.a == 253 && Position.z == 0) { // normal
+    if (col.a == 253) { // normal/in-world
         animationType = int(col.b);
         vertexColor = Color;
     }

@@ -45,10 +45,14 @@ public class ShaderEffects {
         return EFFECTS.get(resourceLocation);
     }
 
-    public static ShaderEffect register(ResourceLocation id, String snippet) {
+    public static ShaderEffect register(ResourceLocation id, String snippet, boolean addFont) {
         ShaderEffect effect = new ShaderEffect(EFFECTS.size(), snippet);
         EFFECTS.put(id, effect);
         return effect;
+    }
+
+    public static ShaderEffect register(ResourceLocation id, String snippet) {
+        return register(id, snippet, true);
     }
 
     public static final ShaderEffect CIRCLE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "circle"), loadSnippet("circle.glsl"));
@@ -57,7 +61,7 @@ public class ShaderEffects {
     public static final ShaderEffect NOISE_GRID = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "noise_grid"), loadSnippet("noise_grid_impl.glsl"));
     public static final ShaderEffect FRACTAL1 = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fractal1"), loadSnippet("fractal1.glsl"));
     public static final ShaderEffect FRACTAL2 = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fractal2"), loadSnippet("fractal2.glsl"));
-    public static final ShaderEffect APERTURE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "aperture"), loadSnippet("rot_impl.glsl"));
+    public static final ShaderEffect APERTURE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "aperture"), loadSnippet("rot_impl.glsl"), false);
     public static final ShaderEffect SPIKE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "spike"), loadSnippet("spike_impl.glsl"));
     public static final ShaderEffect VIGNETTE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "vignette"), loadSnippet("vignette_impl.glsl"));
 }
