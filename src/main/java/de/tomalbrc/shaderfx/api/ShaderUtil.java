@@ -10,6 +10,10 @@ public class ShaderUtil {
         Shaderfx.enableAssets();
     }
 
+    public static void enableAnimojiConversion() {
+        Shaderfx.enableAnimojiConversion();
+    }
+
     public static BufferedImage tintEdges(BufferedImage bufferedImage, int color) {
         bufferedImage.setRGB(0, 0, color);
         bufferedImage.setRGB(bufferedImage.getWidth()-1, 0, color);
@@ -30,7 +34,7 @@ public class ShaderUtil {
         int[] srcPixels = bufferedImage.getRGB(0, 0, width, height, null, 0, width);
         res.setRGB(0, frameheight, width, height, srcPixels, 0, width);
 
-        int metaColor = ARGB.color(252, frames, fps, frameheight);
+        int metaColor = ARGB.color(252, frames + 1, fps, frameheight);
         return tintEdges(res, metaColor);
     }
 }

@@ -1,0 +1,81 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-hbars.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["A"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-mechadoor.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["B"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-motion-pixel.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["C"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-noise.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["D"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-pixel.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["E"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-pixel-swirl.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["F"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-slashes.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["G"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-stripes.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["H"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-swirl.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["I"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-vbars.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["J"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-grid.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["K"]
+    }
+  ]
+}
