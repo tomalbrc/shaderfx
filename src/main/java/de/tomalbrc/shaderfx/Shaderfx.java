@@ -10,13 +10,15 @@ import de.tomalbrc.shaderfx.api.FileUtil;
 import de.tomalbrc.shaderfx.api.ShaderEffect;
 import de.tomalbrc.shaderfx.api.ShaderEffects;
 import de.tomalbrc.shaderfx.api.ShaderUtil;
-import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.polymer.resourcepack.api.PackResource;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.resourcepack.extras.api.format.font.BitmapProvider;
 import eu.pb4.polymer.resourcepack.extras.api.format.font.FontAsset;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -61,20 +63,19 @@ public class Shaderfx implements ModInitializer {
 
         PolymerResourcePackUtils.RESOURCE_PACK_CREATION_EVENT.register(builder -> {
             builder.addResourceConverter((path, resource) -> {
-                if (path.equals("assets/shaderfx/textures/font/frame.png")) {
+                if (convertAnimoji && path.contains("/textures/font/") && path.endsWith("_animoji.png")) {
                     try {
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(resource.readAllBytes()));
-                        ShaderUtil.tintEdges(image, ShaderEffects.APERTURE.asFullscreenColor());
+                        image = ShaderUtil.addAnimatedEmojiMarker(image, 5);
                         var out = new ByteArrayOutputStream();
                         ImageIO.write(image, "PNG", out);
                         return PackResource.of(out.toByteArray());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                } else if (convertAnimoji && path.contains("/textures/font/") && path.endsWith("_animoji.png")) {
+                } else if (path.matches("assets/shaderfx/textures/font/transition-.*\\.png")) {
                     try {
-                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(resource.readAllBytes()));
-                        image = ShaderUtil.addAnimatedEmojiMarker(image, 5);
+                        BufferedImage image = ShaderUtil.tintEdges(ImageIO.read(new ByteArrayInputStream(resource.readAllBytes())), ShaderEffects.IMAGE_TRANSITION.asFullscreenColor());
                         var out = new ByteArrayOutputStream();
                         ImageIO.write(image, "PNG", out);
                         return PackResource.of(out.toByteArray());
@@ -150,6 +151,15 @@ public class Shaderfx implements ModInitializer {
         return img;
     }
 
+    public static MinecraftServerAudiences ADVENTURE;
+
+    public static MinecraftServerAudiences adventure() {
+        if (ADVENTURE == null) {
+            throw new IllegalStateException("Tried to access Adventure without a running server!");
+        }
+        return ADVENTURE;
+    }
+
     @Override
     public void onInitialize() {
         ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("shaderfx_utils.glsl"));
@@ -157,8 +167,9 @@ public class Shaderfx implements ModInitializer {
         ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("fractal1.glsl"));
         ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("fractal2.glsl"));
 
-        final SuggestionProvider<CommandSourceStack> SUGGESTER = (commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(ShaderEffects.EFFECTS.keySet().stream().map(ResourceLocation::toString), suggestionsBuilder);
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> ADVENTURE = MinecraftServerAudiences.of(server));
 
+        final SuggestionProvider<CommandSourceStack> SUGGESTER = (commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(ShaderEffects.EFFECTS.keySet().stream().map(ResourceLocation::toString), suggestionsBuilder);
         CommandRegistrationCallback.EVENT.register((dispatcher, commandBuildContext, commandSelection) -> {
             dispatcher.register(commandFullscreen(SUGGESTER));
             dispatcher.register(commandLocal(SUGGESTER));
@@ -247,7 +258,7 @@ public class Shaderfx implements ModInitializer {
             int stay = IntegerArgumentType.getInteger(x, "stay");
             int fadeOut = IntegerArgumentType.getInteger(x, "fadeOut");
 
-            var titlePacket = new ClientboundSetTitleTextPacket(TextParserUtils.formatText(StringArgumentType.getString(x, "text")));
+            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().asNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
             var timesPacket = new ClientboundSetTitlesAnimationPacket(fadeIn, stay, fadeOut);
             player.connection.send(new ClientboundBundlePacket(ImmutableList.of(timesPacket, titlePacket)));
 

@@ -46,7 +46,7 @@ public class ShaderEffects {
     }
 
     public static ShaderEffect register(ResourceLocation id, String snippet, boolean addFont) {
-        ShaderEffect effect = new ShaderEffect(EFFECTS.size(), snippet);
+        ShaderEffect effect = new ShaderEffect(id, EFFECTS.size(), snippet);
         EFFECTS.put(id, effect);
         return effect;
     }
@@ -64,5 +64,5 @@ public class ShaderEffects {
     public static final ShaderEffect APERTURE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "aperture"), loadSnippet("rot_impl.glsl"), false);
     public static final ShaderEffect SPIKE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "spike"), "color = spikes(vertexColor, centerUV, 0.09);");
     public static final ShaderEffect VIGNETTE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "vignette"), "color = vec4(vertexColor.rgb, clamp(length(centerUV * vec2(0.8, 0.5 / (1 - vertexColor.a))) - 0.6, 0, 1));");
-    public static final ShaderEffect IMAGE_TRANSITION = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "image_transition"), "float mask = texture(Sampler0, texCoord0).r; color = vec4(vertexColor.rgb, step(mask, vertexColor.a));", false);
+    public static final ShaderEffect IMAGE_TRANSITION = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "image_transition"), "float mask = texture(Sampler0, centerUV-0.5).r; color = vec4(vertexColor.rgb, step(mask, vertexColor.a));", false);
 }

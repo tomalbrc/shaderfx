@@ -32,7 +32,7 @@
       "type": "bitmap",
       "file": "shaderfx:font/transition-pixel.png",
       "ascent": 0,
-      "height": 256,
+      "height": 12,
       "chars": ["E"]
     },
     {
@@ -76,6 +76,62 @@
       "ascent": 0,
       "height": 256,
       "chars": ["K"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-chess-then-circles.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["L"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-circles-then-chess-then-circles.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["M"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-crashing-wave.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["N"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-enclosing-triangles.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["O"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-gooey.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["P"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-poke-arena.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["Q"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-spinning-spiral.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["R"]
+    },
+    {
+      "type": "bitmap",
+      "file": "shaderfx:font/transition-trapped.png",
+      "ascent": 0,
+      "height": 256,
+      "chars": ["S"]
     }
   ]
 }

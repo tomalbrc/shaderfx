@@ -22,7 +22,9 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation include("eu.pb4:placeholder-api:${project.papi_version}")
+    modImplementation include("net.kyori:adventure-platform-fabric:${project.adventure_platform_version}")
+    implementation "net.kyori:adventure-text-minimessage:${project.adventure_api_version}"
+    implementation "net.kyori:adventure-api:${project.adventure_api_version}"
 
     modImplementation ("eu.pb4:polymer-core:${project.polymer_version}")
     modImplementation ("eu.pb4:polymer-resource-pack:${project.polymer_version}")
