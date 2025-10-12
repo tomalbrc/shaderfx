@@ -7,13 +7,11 @@ public class ShaderEffect {
     final ResourceLocation location;
     final int id;
     final String snippet;
-    private final boolean addFont;
 
-    public ShaderEffect(ResourceLocation location, int id, String snippet, boolean addFont) {
+    public ShaderEffect(ResourceLocation location, int id, String snippet) {
         this.location = location;
         this.id = id;
         this.snippet = snippet;
-        this.addFont = addFont;
     }
 
     public ResourceLocation location() {
@@ -38,9 +36,5 @@ public class ShaderEffect {
 
     public String snippet() {
         return this.snippet;
-    }
-
-    public boolean addFont() {
-        return addFont;
     }
 }

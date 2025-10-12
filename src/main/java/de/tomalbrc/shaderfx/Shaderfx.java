@@ -41,6 +41,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Shaderfx implements ModInitializer {
     public static final String MODID = "shaderfx";
@@ -63,10 +65,17 @@ public class Shaderfx implements ModInitializer {
 
         PolymerResourcePackUtils.RESOURCE_PACK_CREATION_EVENT.register(builder -> {
             builder.addResourceConverter((path, resource) -> {
-                if (convertAnimoji && path.contains("/textures/font/") && path.endsWith("_animoji.png")) {
+                if (convertAnimoji & path.matches(".*/textures/font/.*_animoji[0-9]*\\.png")) {
                     try {
+                        Pattern p = Pattern.compile("_animoji([0-9]*)\\.png$");
+                        Matcher m = p.matcher(path);
+                        int fps = 5;
+                        if (m.find() && !m.group(1).isBlank()) {
+                            fps = Integer.parseInt(m.group(1));
+                        }
+
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(resource.readAllBytes()));
-                        image = ShaderUtil.addAnimatedEmojiMarker(image, 5);
+                        image = ShaderUtil.addAnimatedEmojiMarker(image, fps);
                         var out = new ByteArrayOutputStream();
                         ImageIO.write(image, "PNG", out);
                         return PackResource.of(out.toByteArray());
@@ -132,10 +141,8 @@ public class Shaderfx implements ModInitializer {
         var img = new BufferedImage(ShaderEffects.EFFECTS.size(), 1, BufferedImage.TYPE_INT_ARGB);
         for (Map.Entry<ResourceLocation, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
             var effect = entry.getValue();
-            if (effect.addFont()) {
-                stringBuilder.append(effect.asChar());
-                img.setRGB(effect.id(), 0, effect.asFullscreenColor());
-            }
+            stringBuilder.append(effect.asChar());
+            img.setRGB(effect.id() - 1, 0, effect.asFullscreenColor());
 
             shaderCases.append(FileUtil.wrapCase(effect.snippet(), effect.id()));
         }
@@ -146,10 +153,7 @@ public class Shaderfx implements ModInitializer {
         var img = new BufferedImage(ShaderEffects.EFFECTS.size(), 1, BufferedImage.TYPE_INT_ARGB);
         for (Map.Entry<ResourceLocation, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
             var effect = entry.getValue();
-            if (!effect.addFont())
-                continue;
-
-            img.setRGB(effect.id(), 0, effect.asLocalEffectColor());
+            img.setRGB(effect.id() - 1, 0, effect.asLocalEffectColor());
         }
         return img;
     }

@@ -46,7 +46,7 @@ public class ShaderEffects {
     }
 
     public static ShaderEffect register(ResourceLocation id, String snippet, boolean addFont) {
-        ShaderEffect effect = new ShaderEffect(id, EFFECTS.size() + 1, snippet, addFont);
+        ShaderEffect effect = new ShaderEffect(id, EFFECTS.size() + 1, snippet);
         EFFECTS.put(id, effect);
         return effect;
     }
