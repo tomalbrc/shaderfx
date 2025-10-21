@@ -14,7 +14,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.HexColorArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -35,8 +34,8 @@ public class ModCommands {
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> commandFullscreen(SuggestionProvider<CommandSourceStack> suggestionProvider) {
-        return Commands.literal("shaderfx").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
+        return Commands.literal("shaderfx").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", IntegerArgumentType.integer()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
+            int color = IntegerArgumentType.getInteger(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
@@ -50,7 +49,7 @@ public class ModCommands {
 
             return Command.SINGLE_SUCCESS;
         })))).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
+            int color = IntegerArgumentType.getInteger(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
@@ -70,8 +69,8 @@ public class ModCommands {
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> commandFullscreenImageTransition(SuggestionProvider<CommandSourceStack> suggestionProvider) {
-        return Commands.literal("shaderfx:transition").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
+        return Commands.literal("shaderfx:transition").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", IntegerArgumentType.integer()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
+            int color = IntegerArgumentType.getInteger(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
@@ -85,7 +84,7 @@ public class ModCommands {
 
             return Command.SINGLE_SUCCESS;
         })))).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
+            int color = IntegerArgumentType.getInteger(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
@@ -106,8 +105,8 @@ public class ModCommands {
 
 
     private static LiteralArgumentBuilder<CommandSourceStack> commandLocal(SuggestionProvider<CommandSourceStack> suggestionProvider) {
-        return Commands.literal("shaderfx:local").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", HexColorArgument.hexColor()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
+        return Commands.literal("shaderfx:local").requires(x -> x.hasPermission(2)).then(Commands.literal("run").then(Commands.argument("id", ResourceLocationArgument.id()).suggests(suggestionProvider).then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("color", IntegerArgumentType.integer()).then(Commands.argument("fadeIn", IntegerArgumentType.integer(0)).then(Commands.argument("stay", IntegerArgumentType.integer(0)).then(Commands.argument("fadeOut", IntegerArgumentType.integer(0)).executes(x -> {
+            int color = IntegerArgumentType.getInteger(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
@@ -121,7 +120,7 @@ public class ModCommands {
 
             return Command.SINGLE_SUCCESS;
         })))).executes(x -> {
-            int color = HexColorArgument.getHexColor(x, "color");
+            int color = IntegerArgumentType.getInteger(x, "color");
             ResourceLocation id = ResourceLocationArgument.getId(x, "id");
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
@@ -148,7 +147,7 @@ public class ModCommands {
             int stay = IntegerArgumentType.getInteger(x, "stay");
             int fadeOut = IntegerArgumentType.getInteger(x, "fadeOut");
 
-            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().asNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
+            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().toNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
             var timesPacket = new ClientboundSetTitlesAnimationPacket(fadeIn, stay, fadeOut);
             player.connection.send(new ClientboundBundlePacket(ImmutableList.of(timesPacket, titlePacket)));
 
@@ -156,14 +155,14 @@ public class ModCommands {
         })))).executes(x -> {
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
-            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().asNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
+            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().toNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
             player.connection.send(titlePacket);
 
             return Command.SINGLE_SUCCESS;
         })).executes(x -> {
             ServerPlayer player = EntityArgument.getPlayer(x, "player");
 
-            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().asNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
+            var titlePacket = new ClientboundSetTitleTextPacket(Shaderfx.adventure().toNative(MiniMessage.miniMessage().deserialize(StringArgumentType.getString(x, "text"))));
             player.connection.send(titlePacket);
 
             return Command.SINGLE_SUCCESS;

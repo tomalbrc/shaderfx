@@ -1,7 +1,7 @@
 package de.tomalbrc.shaderfx.api;
 
 import de.tomalbrc.shaderfx.impl.RPHandler;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 
 import java.awt.image.BufferedImage;
 
@@ -52,7 +52,7 @@ public class ShaderUtil {
         int[] srcPixels = bufferedImage.getRGB(0, 0, width, height, null, 0, width);
         res.setRGB(0, frameheight, width, height, srcPixels, 0, width);
 
-        int metaColor = ARGB.color(252, frames + 1, fps, frameheight);
+        int metaColor = FastColor.ARGB32.color(252, frames + 1, fps, frameheight);
         return tintEdges(res, metaColor);
     }
 }

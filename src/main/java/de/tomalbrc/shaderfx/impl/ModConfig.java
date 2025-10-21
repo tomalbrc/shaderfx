@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import de.tomalbrc.shaderfx.api.ShaderEffects;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Vector2i;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 
 public class ModConfig {
     static Gson GSON = new GsonBuilder()
@@ -28,10 +30,13 @@ public class ModConfig {
     public boolean addAssets = true;
     public boolean enableAnimatedEmojiConversion = true;
     public boolean markAsRequired = true;
+    public List<ConfiguredEffectTexture> effectTextures = List.of(
+            new ConfiguredEffectTexture("assets/shaderfx/textures/font/custom/fractal.png", ShaderEffects.END.location(), new Vector2i(40, 9))
+    );
     public JoinEffect joinEffect = new JoinEffect(true, "transition", ShaderEffects.TRANSITION_ENCLOSING_TRIANGLES.location(), 0x0, 15, 20);
 
-    public record JoinEffect(boolean enabled, String type, ResourceLocation effect, int color, int stay, int fadeOut) {
-    }
+    public record ConfiguredEffectTexture(String path, ResourceLocation effect, Vector2i size) {}
+    public record JoinEffect(boolean enabled, String type, ResourceLocation effect, int color, int stay, int fadeOut) {}
 
     public static ModConfig getInstance() {
         if (instance == null) {

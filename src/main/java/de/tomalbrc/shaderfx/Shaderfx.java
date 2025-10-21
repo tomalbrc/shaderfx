@@ -8,7 +8,8 @@ import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -19,9 +20,9 @@ import java.util.List;
 
 public class Shaderfx implements ModInitializer {
     public static final String MODID = "shaderfx";
-    public static MinecraftServerAudiences ADVENTURE;
+    public static FabricAudiences ADVENTURE;
 
-    public static MinecraftServerAudiences adventure() {
+    public static FabricAudiences adventure() {
         if (ADVENTURE == null) {
             throw new IllegalStateException("Tried to access Adventure without a running server!");
         }
@@ -38,8 +39,9 @@ public class Shaderfx implements ModInitializer {
         ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("spikes.glsl"));
         ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("fractal1.glsl"));
         ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("fractal2.glsl"));
+        ShaderEffects.addImport(ResourceLocation.withDefaultNamespace("endfx.glsl"));
 
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> ADVENTURE = MinecraftServerAudiences.of(server));
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> ADVENTURE = FabricServerAudiences.of(server));
 
         var joinEffect = ModConfig.getInstance().joinEffect;
         if (joinEffect != null && joinEffect.enabled()) {

@@ -1,7 +1,7 @@
 package de.tomalbrc.shaderfx.api;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 
 public class ShaderEffect {
     final ResourceLocation location;
@@ -27,11 +27,11 @@ public class ShaderEffect {
     }
 
     public int asFullscreenColor() {
-        return ARGB.color(251, 0, 0, id());
+        return FastColor.ARGB32.color(251, 0, 0, id());
     }
 
     public int asLocalEffectColor() {
-        return ARGB.color(253, 0, 0, id());
+        return FastColor.ARGB32.color(253, 0, 0, id());
     }
 
     public String snippet() {

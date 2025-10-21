@@ -1,15 +1,22 @@
-#version 330
+#version 150
 
-#moj_import <minecraft:fog.glsl>
-#moj_import <minecraft:globals.glsl>
-#moj_import <minecraft:dynamictransforms.glsl>
-
-//%IMPORTS%
+#moj_import <fog.glsl>
 
 uniform sampler2D Sampler0;
 
-in float sphericalVertexDistance;
-in float cylindricalVertexDistance;
+uniform vec4 ColorModulator;
+uniform vec2 ScreenSize;
+uniform float GameTime;
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
+uniform float FogStart;
+uniform float FogEnd;
+uniform vec4 FogColor;
+uniform int FogShape;
+
+//%IMPORTS%
+
+in float vertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
 
@@ -46,9 +53,9 @@ void main() {
         color = texture(Sampler0, texCoord0  + vec2(0, frameheight/256*(frameI+1))) * vertexColor * ColorModulator;
     }
 
-    if (color.a < 0.1) {
+    if (effectId == 0 && color.a < 0.1) {
         discard;
     }
 
-    fragColor = apply_fog(color, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
+    fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }

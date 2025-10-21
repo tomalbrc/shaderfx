@@ -2,7 +2,6 @@ package de.tomalbrc.shaderfx.api;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -15,9 +14,9 @@ import static de.tomalbrc.shaderfx.Shaderfx.MODID;
 import static de.tomalbrc.shaderfx.api.FileUtil.loadSnippet;
 
 public class ShaderEffects {
-    public static final FontDescription.Resource FONT = new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath(MODID, "fx"));
-    public static final FontDescription.Resource FONT_TRANSITIONS = new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath(MODID, "transition"));
-    public static final FontDescription.Resource FONT_LOCAL = new FontDescription.Resource(ResourceLocation.fromNamespaceAndPath(MODID, "fx_local"));
+    public static final ResourceLocation FONT = ResourceLocation.fromNamespaceAndPath(MODID, "fx");
+    public static final ResourceLocation FONT_TRANSITIONS = ResourceLocation.fromNamespaceAndPath(MODID, "transition");
+    public static final ResourceLocation FONT_LOCAL = ResourceLocation.fromNamespaceAndPath(MODID, "fx_local");
 
     public static final Map<ResourceLocation, ShaderEffect> EFFECTS = new Object2ObjectArrayMap<>();
     public static final Map<ResourceLocation, ImageTransition> TRANSITIONS = new Object2ObjectArrayMap<>();
@@ -29,7 +28,7 @@ public class ShaderEffects {
     }
 
     public static MutableComponent transitionComponent(ResourceLocation id, int color) {
-        return Component.literal(TRANSITIONS.get(id).character()).withStyle(Style.EMPTY.withFont(FONT_TRANSITIONS).withColor(color).withShadowColor(0));
+        return Component.literal(TRANSITIONS.get(id).character()).withStyle(Style.EMPTY.withFont(FONT_TRANSITIONS).withColor(color));
     }
 
     public static MutableComponent transitionComponent(ResourceLocation id) {
@@ -37,11 +36,11 @@ public class ShaderEffects {
     }
 
     public static MutableComponent effectComponent(ResourceLocation effectId, int color) {
-        return Component.literal(EFFECTS.get(effectId).asChar()).withStyle(Style.EMPTY.withFont(FONT).withColor(color).withShadowColor(0));
+        return Component.literal(EFFECTS.get(effectId).asChar()).withStyle(Style.EMPTY.withFont(FONT).withColor(color));
     }
 
     public static MutableComponent effectComponentLocal(ResourceLocation effectId, int color) {
-        return Component.literal(EFFECTS.get(effectId).asChar()).withStyle(Style.EMPTY.withFont(FONT_LOCAL).withColor(color).withShadowColor(0));
+        return Component.literal(EFFECTS.get(effectId).asChar()).withStyle(Style.EMPTY.withFont(FONT_LOCAL).withColor(color));
     }
 
     public static MutableComponent effectComponentLocal(ResourceLocation effectId) {
@@ -78,10 +77,24 @@ public class ShaderEffects {
     public static final ShaderEffect NOISE_GRID = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "noise_grid"), "ivec2 grid = ivec2(gl_FragCoord.xy / 32) * 32; color = (abs(hash(grid.x ^ hash(grid.y)) % 0x100) + 10 < int(vertexColor.a * (length(grid / ScreenSize.xy - 0.5) * 2 + 1) * 0x100)) ? vec4(vertexColor.rgb, 1) : vec4(0);");
     public static final ShaderEffect FRACTAL1 = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fractal1"), "color = fractal1();");
     public static final ShaderEffect FRACTAL2 = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "fractal2"), "color = fractal2();");
-    public static final ShaderEffect APERTURE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "aperture"), loadSnippet("rot_impl.glsl"), false);
     public static final ShaderEffect SPIKE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "spike"), "color = spikes(vertexColor, centerUV, 0.09);");
     public static final ShaderEffect VIGNETTE = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "vignette"), "color = vec4(vertexColor.rgb, clamp(length(centerUV * vec2(0.8, 0.5 / (1 - vertexColor.a))) - 0.6, 0, 1));");
     public static final ShaderEffect IMAGE_TRANSITION = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "image_transition"), "float mask = texture(Sampler0, centerUV-0.5*vec2(1,-1)).r; color = vec4(vertexColor.rgb, step(mask, vertexColor.a));", false);
+
+    public static final ShaderEffect END = ShaderEffects.register(ResourceLocation.fromNamespaceAndPath(MODID, "end"), """
+            vec2 fragCoord = gl_FragCoord.xy;
+            float iTime = GameTime*1000.0;
+            
+            vec3 c = vec3(0.0);
+            c += 1.4 * layer(rotate2d(0.2) * fragCoord, 2.0, iTime) * vec3(32./255., 57./255., 99./255.);
+            c += 1.6 * layer(rotate2d(-0.4) * fragCoord, 4.0, iTime) * vec3(34./255., 67./255., 75./255.);
+            c += 1.7 * layer(rotate2d(1.5) * fragCoord, 6.0, iTime) * vec3(37./255., 72./255., 72./255.);
+            c += 1.9 * layer(rotate2d(-0.8) * fragCoord, 10.0, iTime) * vec3(41./255., 74./255., 61./255.);
+            c += 1.3 * layer(rotate2d(0.75) * fragCoord, 10.0, iTime) * vec3(41./255., 74./255., 61./255.);
+            
+            color = vec4(decodeSRGB(c) * vertexColor.rgb, 1.0);
+            """, true);
+
 
     public static final ImageTransition TRANSITION_HBARS = ShaderEffects.registerTransition(ResourceLocation.fromNamespaceAndPath(MODID, "transition-hbars"), "A");
     public static final ImageTransition TRANSITION_MECHADOOR = ShaderEffects.registerTransition(ResourceLocation.fromNamespaceAndPath(MODID, "transition-mechadoor"), "B");
