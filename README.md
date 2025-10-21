@@ -20,12 +20,17 @@ Animated emoji format:
 
 Example for fullscreen effect:
 
-`/shaderfx run shaderfx:vignette Pinnit fff 20 10 20`
+`/shaderfx run shaderfx:vignette @s fff 20 10 20`
 
 In some cases you may want to specify your own font/character:
 
-`/shaderfx:custom run shaderfx:vignette "<font:mynamespace:font1>X</font>" Pinnit fff 20 10 20`
+`/shaderfx:custom run shaderfx:vignette "<font:mynamespace:font1>X</font>" @s fff 20 10 20`
 
+For example the builtin image-based transition fonts:
+`/shaderfx:custom run "<font:shaderfx:transition><black>C</font>" @s 10 20 10`
+
+THe built-in image-based transitions can also be shown with shaderfx:transition:
+`/shaderfx:transition run shaderfx:transition-mechadoor @s 000000 10 20 10`
 
 # API
 
@@ -72,7 +77,7 @@ in float cylindricalVertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
 
-flat in int animationType;
+flat in int effectId;
 
 flat in int frames;
 flat in int fps;
@@ -87,8 +92,8 @@ void main() {
     vec2 centerUV = gl_FragCoord.xy / ScreenSize - 0.5;
     float ratio = ScreenSize.y / ScreenSize.x;
 
-    if (animationType != 0) {
-        switch (animationType) { 
+    if (effectId != 0) {
+        switch (effectId) { 
 // snippets will be placed here:
 case 1: { // vignette_impl.glsl:
     color = vec4(0, 0, 0, clamp(length(centerUV * vec2(0.8, 0.5 / (1 - vertexColor.a))) - 0.6, 0, 1));

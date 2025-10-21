@@ -1,17 +1,17 @@
 package de.tomalbrc.shaderfx.api;
 
-import de.tomalbrc.shaderfx.Shaderfx;
+import de.tomalbrc.shaderfx.impl.RPHandler;
 import net.minecraft.util.ARGB;
 
 import java.awt.image.BufferedImage;
 
 public class ShaderUtil {
     public static void enableAssets() {
-        Shaderfx.enableAssets();
+        RPHandler.enableAssets();
     }
 
     public static void enableAnimojiConversion() {
-        Shaderfx.enableAnimojiConversion();
+        RPHandler.enableAnimojiConversion();
     }
 
     public static BufferedImage toARGB(BufferedImage src) {

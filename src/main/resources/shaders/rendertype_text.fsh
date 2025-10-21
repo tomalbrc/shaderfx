@@ -13,7 +13,7 @@ in float cylindricalVertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
 
-flat in int animationType;
+flat in int effectId;
 
 flat in int frames;
 flat in int fps;
@@ -28,8 +28,8 @@ void main() {
     vec2 centerUV = gl_FragCoord.xy / ScreenSize - 0.5;
     float ratio = ScreenSize.y / ScreenSize.x;
 
-    if (animationType != 0) {
-        switch (animationType) {
+    if (effectId != 0) {
+        switch (effectId) {
 //%CASES%
         }
     }
