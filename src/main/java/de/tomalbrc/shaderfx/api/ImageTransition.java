@@ -1,6 +1,6 @@
 package de.tomalbrc.shaderfx.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
-public record ImageTransition(ResourceLocation location, String character) {
+public record ImageTransition(Identifier location, String character) {
 }

@@ -8,7 +8,7 @@ import eu.pb4.polymer.resourcepack.api.PackResource;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.resourcepack.extras.api.format.font.BitmapProvider;
 import eu.pb4.polymer.resourcepack.extras.api.format.font.FontAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -77,7 +77,7 @@ public class RPHandler {
 
             String fragmentShader = FileUtil.loadCore("rendertype_text.fsh");
             StringBuilder importList = new StringBuilder();
-            for (ResourceLocation location : ShaderEffects.IMPORTS) {
+            for (Identifier location : ShaderEffects.IMPORTS) {
                 importList.append(String.format("#moj_import <%s>\n", location));
             }
             fragmentShader = fragmentShader.replace("//%IMPORTS%", importList);
@@ -94,11 +94,11 @@ public class RPHandler {
 
             FontAsset.Builder fontAsset = FontAsset.builder();
             String formatted = String.format("font/%s.png", ShaderEffects.FONT.id().getPath());
-            fontAsset.add(new BitmapProvider(ResourceLocation.fromNamespaceAndPath(MODID, formatted), chars, 0));
+            fontAsset.add(new BitmapProvider(Identifier.fromNamespaceAndPath(MODID, formatted), chars, 0));
 
             FontAsset.Builder fontAssetLocal = FontAsset.builder();
             String formatted2 = String.format("font/%s_local.png", ShaderEffects.FONT.id().getPath());
-            fontAssetLocal.add(new BitmapProvider(ResourceLocation.fromNamespaceAndPath(MODID, formatted2), chars, 0));
+            fontAssetLocal.add(new BitmapProvider(Identifier.fromNamespaceAndPath(MODID, formatted2), chars, 0));
 
             var out = new ByteArrayOutputStream();
             var outLocal = new ByteArrayOutputStream();
@@ -119,7 +119,7 @@ public class RPHandler {
 
     private static @NotNull BufferedImage createFullscreenFontImage(StringBuilder stringBuilder, StringBuilder shaderCases) {
         var img = new BufferedImage(ShaderEffects.EFFECTS.size(), 1, BufferedImage.TYPE_INT_ARGB);
-        for (Map.Entry<ResourceLocation, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
+        for (Map.Entry<Identifier, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
             var effect = entry.getValue();
             stringBuilder.append(effect.asChar());
             img.setRGB(effect.id() - 1, 0, effect.asFullscreenColor());
@@ -131,7 +131,7 @@ public class RPHandler {
 
     private static @NotNull BufferedImage createLocalEffectFontImage() {
         var img = new BufferedImage(ShaderEffects.EFFECTS.size(), 1, BufferedImage.TYPE_INT_ARGB);
-        for (Map.Entry<ResourceLocation, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
+        for (Map.Entry<Identifier, ShaderEffect> entry : ShaderEffects.EFFECTS.entrySet()) {
             var effect = entry.getValue();
             img.setRGB(effect.id() - 1, 0, effect.asLocalEffectColor());
         }
