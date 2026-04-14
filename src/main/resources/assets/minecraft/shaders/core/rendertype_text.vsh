@@ -3,6 +3,7 @@
 #moj_import <minecraft:fog.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>
 #moj_import <minecraft:projection.glsl>
+#moj_import <minecraft:sample_lightmap.glsl>
 
 const vec2[4] corners = vec2[4](vec2(0), vec2(0, 1), vec2(1), vec2(1, 0));
 
@@ -30,7 +31,6 @@ flat out float frameheight;
 
 void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-    vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
 
     sphericalVertexDistance = fog_spherical_distance(Position);
     cylindricalVertexDistance = fog_cylindrical_distance(Position);
@@ -51,7 +51,7 @@ void main() {
         texCoord0 = UV0;
     } else {
         effectId = 0;
-        vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
+        vertexColor = Color * sample_lightmap(Sampler2, UV2);
         texCoord0 = UV0;
     }
 

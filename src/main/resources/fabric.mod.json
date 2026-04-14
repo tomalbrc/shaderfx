@@ -14,12 +14,9 @@
       "de.tomalbrc.shaderfx.Shaderfx"
     ]
   },
-  "mixins": [
-    "shaderfx.mixins.json"
-  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": ">=${minecraft_version}"
   }
 }

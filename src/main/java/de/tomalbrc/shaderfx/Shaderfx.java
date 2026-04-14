@@ -43,7 +43,7 @@ public class Shaderfx implements ModInitializer {
 
         var joinEffect = ModConfig.getInstance().joinEffect;
         if (joinEffect != null && joinEffect.enabled()) {
-            ServerPlayConnectionEvents.JOIN.register((serverGamePacketListener, packetSender, server) -> {
+            ServerPlayConnectionEvents.JOIN.register((serverGamePacketListener, _, _) -> {
                 var p1 = new ClientboundSetTitlesAnimationPacket(0, joinEffect.stay(), joinEffect.fadeOut());
 
                 Component fx;
